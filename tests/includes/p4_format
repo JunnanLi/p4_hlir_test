@@ -1,0 +1,70 @@
+header_type x_t {
+	fields {
+		a : 16;
+	}
+}
+
+parser start {
+	set_metadata(x, 0);
+	return parser_ethernet;
+}
+
+header x_t ethernet;
+
+parser parser_ethernet {
+	extract(ethernet);
+	return select(latest.etherType){
+		ETHERTYPE_VLAN : parse_vlan;
+		default: parser_ip;
+	}
+}
+
+parser parser_udp {
+	extract(udp);
+	return ingress;
+}
+
+
+
+#include "xx.p4"
+action x(a, b) {
+	
+}
+
+table x {
+	reads {
+		ipv4.dstAddr : lpm
+	}
+	actions {
+
+	}
+}
+
+counter cnt1 {
+	
+}
+
+register reg1 {
+	
+}
+
+control ingress {
+	apply(x)
+}
+
+control egress {
+	
+}
+
+key:
+fields, return, header, parser, extract, action, table, reads, lpm, exact, actions, counter, register, control
+
+standard_metadata:
+standard_metadata.egress_spec, 
+
+type_key:
+header_type,
+
+
+atom action:
+set_metadata(x, 0), add_to_field(x, -1), modify_field(x, y, mask), drop(), count(x, 10), apply(table)
